@@ -1,7 +1,3 @@
-// Based upon alot of the charged-ieee template.
-// You'll see alot of similarities, aside from
-// How the template itself is constructed.
-
 // SINTA-1 Spec
 #let sinta-1(
 
@@ -85,3 +81,84 @@
   ]
 }
 
+/* --- */
+
+// SINTA-3
+#let sinta-3(
+  // tititle
+  article-title: [Article Title Here],
+  
+  // abstract
+  abstract: none,
+  abstract-keywords: (),
+  abstract-eng: none,
+  abstract-keywords-eng: (),
+
+  // BibLaTeX
+  bibliography: none,
+) = {
+
+  set paper(
+    size: "a4"
+  )
+
+  set text(
+    font: "Times New Roman",
+    size: 11pt,
+    spacing: 1.5pt,
+  )
+
+  set numbering("A.")
+
+  show heading.where(level: 2): {
+    set text(
+      size: 12pt,
+    )
+  }
+}
+
+#let sinta-3-fig(fig-struct) = {
+  /*
+    fig-struct = (
+      container,
+      caption,
+    )
+  */
+
+  set text(lang: "id")
+  show figure.caption: strong
+
+  // basic checks
+  assert.ne(fig-struct, none, message: "Fig structure cannot be empty")
+  assert(fig-struct.children.at(0).func() in (image, table), message: "You need to pass in an image or a table into the content!")
+
+  let fig-content = fig-struct.children.at(0)
+  let fig-caption = fig-struct.children.at(1)
+
+  return figure(
+    fig-content,
+    caption: figure.caption(
+      position: top,
+      separator: [. ],
+      [#fig-caption]
+    )
+  )
+}
+
+#let foo = {
+  table(
+    columns: 3,
+    ..range(9).map(x => [#x])
+  )
+}
+
+
+#{
+  context foo.func() in (image, table)
+}
+
+#let struct = {
+  foo
+  "Some caption"
+}
+#sinta-3-fig(struct)
