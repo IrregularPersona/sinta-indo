@@ -1,6 +1,5 @@
 // SINTA-1 Spec
 #let sinta-1(
-
   // Set journal specification
   journal-title: [Journal Title: Institution Name],
   print-issn: [1234-5678],
@@ -60,33 +59,20 @@
   )
 }
 
+/* ------------ */
 
-#let create-img-fig(img) = {
-  
-}
-
-#let create-table-fig(img) = {
-  
-}
-
-#let sinta-1-fig(fig-type, fig) = {
-  // check if the 2 args exists
-  assert(fig-type in ("table", "image"), "Figure type has to be either a table or an image.")
-  assert(fig != none, "You need to pass a figure into this.")
-
-  if fig-type == "table" [
-    assert(fig.func() != table, "You need to pass a table as the figure content.")
-  ] else [
-    assert(fig.func() != image, "You need to pass an image as the figure content.")
-  ]
-}
-
-/* --- */
-
-// SINTA-3
+// SINTA-3 Spec
 #let sinta-3(
-  // tititle
-  article-title: [Article Title Here],
+  // title
+  article-title: [Set your Article Title],
+
+  // Author dict
+  // Name
+  // Affiliation
+  // City
+  // Country
+  // Email (Optional)
+  authors: (),
   
   // abstract
   abstract: none,
@@ -94,71 +80,164 @@
   abstract-eng: none,
   abstract-keywords-eng: (),
 
+  // content
+  body,
+
   // BibLaTeX
   bibliography: none,
 ) = {
 
-  set paper(
-    size: "a4"
+  set document(title: article-title, author: authors.map(author => author.name))
+
+  set page(
+    paper: "a4"
   )
 
   set text(
-    font: "Times New Roman",
+    // font: "Times New Roman",
     size: 11pt,
     spacing: 1.5pt,
+    lang: "id",
   )
 
-  set numbering("A.")
+  show figure.where(kind: table): set figure.caption(position: top)
 
-  show heading.where(level: 2): {
-    set text(
-      size: 12pt,
-    )
+  set heading(numbering: "A.")
+  show heading: it => {
+    set text(size: 12pt)
+    upper(it)
   }
+
+  place(
+    top+center,
+    float: true,
+    scope: "parent",
+    clearance: 30pt,
+    {
+      show std.title: set align(center)
+      show std.title: set par(leading: 0.5em)
+      show std.title: set text(size: 14pt, weight: "bold")
+      std.title()
+
+      linebreak()
+      set par(leading: 0.6em, spacing: 0.5em)
+      set par(justify: true)
+  
+      let get-name = authors.map(x => x.name).join(", ")
+      let get-affiliation = authors.map(x => x.city).dedup().join(", ")
+      let get-city = authors.map(x => x.affiliation).dedup().join(", ")
+      let get-country = authors.map(x => x.country).dedup().join(", ")
+      let get-email = authors.map(x => link("mailto:" + x.email)).dedup().join(", ")
+
+      align(center)[
+        #get-name
+      ]
+      align(center)[
+        #get-affiliation
+      ]
+      align(center)[
+        #get-city
+      ]
+      align(center)[
+        #get-country
+      ]
+      align(center)[
+        #get-email
+      ]
+    }
+  ) 
+
+  if abstract != none {
+    set par(spacing: 0.8em, justify: true)
+    set text(11pt, spacing: 100%)
+    align(center)[#upper(strong("Abstract"))]
+    align()[#abstract]
+
+    if abstract-keywords != () {
+      align(center)[Kata Kunci : #abstract-keywords.join[; ]]
+    }
+    v(2pt)
+  }
+
+  set par(first-line-indent: 2cm)
+  body
+
+  bibliography
 }
 
-#let sinta-3-fig(fig-struct) = {
-  /*
-    fig-struct = (
-      container,
-      caption,
-    )
-  */
+#show figure.caption: it => {
+    strong[#it.supplement #context it.counter.display(it.numbering)]
+    strong(it.separator)
+    it.body
+}
 
-  set text(lang: "id")
-  show figure.caption: strong
-
-  // basic checks
-  assert.ne(fig-struct, none, message: "Fig structure cannot be empty")
-  assert(fig-struct.children.at(0).func() in (image, table), message: "You need to pass in an image or a table into the content!")
-
-  let fig-content = fig-struct.children.at(0)
-  let fig-caption = fig-struct.children.at(1)
-
-  return figure(
-    fig-content,
-    caption: figure.caption(
-      position: top,
-      separator: [. ],
-      [#fig-caption]
-    )
+#let sinta-3-figure(content, caption: none, source: none) = {
+  let caption-position = if type(content) == "content" and content.func() == table {
+    top
+  } else {
+    bottom
+  }
+  
+  figure(
+    kind: "sourced",
+    supplement: strong([Sumber]),
+    numbering: (..) => {h(-measure(sym.space).width)},
+    figure(
+      content,
+      caption: if caption != none {
+        figure.caption(
+          position: if type(content) == std.content and content.func() == table { top } else { bottom },
+          caption,
+        )
+      }
+    ),
+    caption: source
   )
 }
 
-#let foo = {
-  table(
-    columns: 3,
-    ..range(9).map(x => [#x])
-  )
-}
+#let author-list = (
+  (
+    name: "Max Park",
+    affiliation: [X Organization],
+    city: [Pretoria],
+    country: [South Africa],
+    email: "test@mail.org",
+  ),
+  (
+    name: "Peter Lee",
+    affiliation: [X Organization],
+    city: [Kuala Lumpur],
+    country: [Malaysia],
+    email: "test@mail.org",
+  ),
+  (
+    name: "Peter Liu",
+    affiliation: [X Organization],
+    city: [Kuala Lumpur],
+    country: [Malaysia],
+    email: "another_test@mail.org",
+  ),
+)
 
+#let abstract-content = lorem(55)
+#let abstract-keys = ("Test", "Foo", "Bar", "Baz", "FooBar", "FooBaz")
+#show: sinta-3.with(
+  article-title: [Menjelaskan Cara Ngentot],
+  authors: author-list,
+  abstract: abstract-content,
+  abstract-keywords: abstract-keys,
+  abstract-eng: abstract-content
+) 
 
-#{
-  context foo.func() in (image, table)
-}
+= Pendahuluan
+// #par(first-line-indent: 0.5cm)[#lorem(50)]
+#lorem(50)
 
-#let struct = {
-  foo
-  "Some caption"
-}
-#sinta-3-fig(struct)
+#lorem(50)
+= Tinjauan Pustaka
+#lorem(50)
+= Metode
+= Temuan
+= Bahasan
+= Kesimpulan
+
