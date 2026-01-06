@@ -1,3 +1,8 @@
 # SINTA Indo
 
-This is a Typst template that for a single column paper, following the general guide of the JPIT Template.
+This is a template for the SINTA specs from Indonesia.
+
+## NOTE:
+There is literally no standardized spec. This is hell to make from the start. DO NOT EVER TAKE PART IN THIS YOURSELF.
+
+
