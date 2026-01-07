@@ -33,7 +33,7 @@
   abstract-keywords: (), // min 3, max 6 (no guide on sizing)
 
   paper-size: "a4",
-  reference: none, // calls BiBLaTex references
+  bibliography: none, // calls BiBLaTex references
   body
 ) = {
 
@@ -62,7 +62,7 @@
 /* ------------ */
 
 // SINTA-3 Spec
-#let sinta-3(
+#let sinta3(
   // title
   article-title: [Set your Article Title],
 
@@ -107,6 +107,10 @@
     set text(size: 12pt)
     upper(it)
   }
+
+  show std.bibliography: set text(8pt)
+  show std.bibliography: set block(spacing: 0.5em)
+  set std.bibliography(style: "apa")
 
   place(
     top+center,
@@ -159,7 +163,10 @@
     v(2pt)
   }
 
-  set par(first-line-indent: 2cm)
+  set par(first-line-indent: (
+    amount: 0.5cm,
+    all: true
+  ))
   body
 
   bibliography
@@ -194,50 +201,4 @@
     caption: source
   )
 }
-
-#let author-list = (
-  (
-    name: "Max Park",
-    affiliation: [X Organization],
-    city: [Pretoria],
-    country: [South Africa],
-    email: "test@mail.org",
-  ),
-  (
-    name: "Peter Lee",
-    affiliation: [X Organization],
-    city: [Kuala Lumpur],
-    country: [Malaysia],
-    email: "test@mail.org",
-  ),
-  (
-    name: "Peter Liu",
-    affiliation: [X Organization],
-    city: [Kuala Lumpur],
-    country: [Malaysia],
-    email: "another_test@mail.org",
-  ),
-)
-
-#let abstract-content = lorem(55)
-#let abstract-keys = ("Test", "Foo", "Bar", "Baz", "FooBar", "FooBaz")
-#show: sinta-3.with(
-  article-title: [Menjelaskan Cara Ngentot],
-  authors: author-list,
-  abstract: abstract-content,
-  abstract-keywords: abstract-keys,
-  abstract-eng: abstract-content
-) 
-
-= Pendahuluan
-// #par(first-line-indent: 0.5cm)[#lorem(50)]
-#lorem(50)
-
-#lorem(50)
-= Tinjauan Pustaka
-#lorem(50)
-= Metode
-= Temuan
-= Bahasan
-= Kesimpulan
 

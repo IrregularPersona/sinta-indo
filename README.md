@@ -8,7 +8,7 @@ There is literally no standardized spec. This is hell to make from the start. DO
 
 - [ ] SINTA-1 (5%)
 - [ ] SINTA-2 (0%)
-- [ ] SINTA-3 (80%)
+- [x] SINTA-3 (100%)
 - [ ] SINTA-4 (0%)
 - [ ] SINTA-5 (0%)
 - [ ] SINTA-6 (0%)
